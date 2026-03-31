@@ -1,0 +1,12 @@
+package com.aluminium.backend.repository;
+
+import com.aluminium.backend.model.Product;
+import java.util.List;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    @EntityGraph(attributePaths = {"category"})
+    List<Product> findAll();
+}
