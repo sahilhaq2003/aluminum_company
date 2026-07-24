@@ -80,22 +80,12 @@ export const adminApi = {
     await api.delete(`/admin/products/${id}`);
   },
   uploadImage: async (file) => {
-    const { supabase } = await import("./utils/supabase");
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-    const filePath = `uploads/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("images")
-      .upload(filePath, file);
-
-    if (uploadError) {
-      console.error("Image upload failed.", uploadError);
-      throw new Error(`Upload failed: ${uploadError.message}`);
-    }
-
-    const { data } = supabase.storage.from("images").getPublicUrl(filePath);
-    return data.publicUrl;
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post("/admin/uploads", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data.url;
   },
   addProjectCategory: async (projectId, name) => {
     const res = await api.post("/admin/project-categories", { projectId, name });
