@@ -50,20 +50,20 @@ export default function ProjectDetailPage() {
   const filteredGallery =
     galleryCategory === "All"
       ? projectCategories.flatMap((cat) =>
-          cat.images.map((img) => ({ imageId: img.imageId, caption: img.caption, category: cat.name }))
+          cat.images.map((img) => ({ imageUrl: img.imageUrl, caption: img.caption, category: cat.name }))
         )
       : projectCategories
           .filter((cat) => cat.name === galleryCategory)
           .flatMap((cat) =>
-            cat.images.map((img) => ({ imageId: img.imageId, caption: img.caption, category: cat.name }))
+            cat.images.map((img) => ({ imageUrl: img.imageUrl, caption: img.caption, category: cat.name }))
           );
-  const displayGallery = filteredGallery.length > 0 ? filteredGallery : project.coverImageId ? [{ imageId: project.coverImageId, caption: "Cover", category: "All" }] : [];
+  const displayGallery = filteredGallery.length > 0 ? filteredGallery : project.coverImageUrl ? [{ imageUrl: project.coverImageUrl, caption: "Cover", category: "All" }] : [];
 
   return (
     <main>
       <section className="relative h-[360px] overflow-hidden md:h-[420px]">
         <ImageWithFallback
-          imageId={project.coverImageId}
+          src={project.coverImageUrl}
           alt={project.title}
           className="h-full w-full object-cover"
         />
@@ -150,13 +150,13 @@ export default function ProjectDetailPage() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
               {displayGallery.map((item, i) => (
                 <button
-                  key={`${item.imageId}-${i}`}
+                  key={`${item.imageUrl}-${i}`}
                   onClick={() => setActive(item)}
                   className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-lg text-left"
                 >
                   <div className="relative h-56 overflow-hidden">
                     <ImageWithFallback
-                      imageId={item.imageId}
+                      src={item.imageUrl}
                       alt={item.caption || `${project.title} gallery ${i + 1}`}
                       className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
@@ -203,7 +203,7 @@ export default function ProjectDetailPage() {
                       >
                         <div className="relative h-44 overflow-hidden">
                           <ImageWithFallback
-                            imageId={p.imageId}
+                            src={p.imageUrl}
                             alt={p.name}
                             className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                           />
@@ -256,7 +256,7 @@ export default function ProjectDetailPage() {
         >
           <div className="relative" onClick={(e) => e.stopPropagation()}>
             <ImageWithFallback
-              imageId={active.imageId}
+              src={active.imageUrl}
               alt={active.caption || "Gallery preview"}
               className="max-h-[80vh] max-w-[92vw] rounded-xl"
             />
