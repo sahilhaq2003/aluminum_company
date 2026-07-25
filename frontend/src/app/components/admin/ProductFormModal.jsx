@@ -102,7 +102,7 @@ export function ProductFormModal({ open, initial, categories, onClose, onSubmit 
             />
             {form.imageId && (
               <img
-                src={`/api/images/${form.imageId}`}
+                src={`${import.meta.env.VITE_API_BASE_URL || "/api"}/images/${form.imageId}`}
                 className="h-10 w-10 rounded object-cover"
               />
             )}

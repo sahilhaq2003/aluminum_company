@@ -3,9 +3,11 @@ import { useState } from "react";
 const fallback =
   "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop";
 
+const apiBase = import.meta.env.VITE_API_BASE_URL || "/api";
+
 function getImageUrl(imageId) {
   if (!imageId) return null;
-  return `/api/images/${imageId}`;
+  return `${apiBase}/images/${imageId}`;
 }
 
 export function ImageWithFallback({ imageId, src, ...props }) {

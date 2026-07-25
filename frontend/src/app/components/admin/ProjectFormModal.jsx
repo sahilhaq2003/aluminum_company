@@ -237,7 +237,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
               />
               {form.coverImageId && (
                 <img
-                  src={`/api/images/${form.coverImageId}`}
+                  src={`${import.meta.env.VITE_API_BASE_URL || "/api"}/images/${form.coverImageId}`}
                   className="h-12 w-12 rounded-lg object-cover"
                   alt="Cover"
                 />
@@ -343,7 +343,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
                         >
                           <div className="aspect-square overflow-hidden">
                             <img
-                              src={`/api/images/${img.imageId}`}
+                              src={`${import.meta.env.VITE_API_BASE_URL || "/api"}/images/${img.imageId}`}
                               alt={img.caption || `Image ${imgIdx + 1}`}
                               className="h-full w-full object-cover"
                             />
