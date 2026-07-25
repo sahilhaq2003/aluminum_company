@@ -85,14 +85,14 @@ export const adminApi = {
     const res = await api.post("/admin/uploads", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return res.data.url;
+    return res.data.imageId;
   },
   addProjectCategory: async (projectId, name) => {
     const res = await api.post("/admin/project-categories", { projectId, name });
     return res.data;
   },
-  addProjectImage: async (categoryId, imageUrl, caption) => {
-    const res = await api.post("/admin/project-images", { categoryId, imageUrl, caption });
+  addProjectImage: async (categoryId, imageId, caption) => {
+    const res = await api.post("/admin/project-images", { categoryId, imageId, caption });
     return res.data;
   },
   markContactRead: async (id) => {

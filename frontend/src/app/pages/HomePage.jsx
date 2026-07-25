@@ -208,7 +208,7 @@ export default function HomePage() {
                 className="group relative overflow-hidden rounded-2xl shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
               >
                 <ImageWithFallback
-                  src={project.coverImageUrl}
+                  imageId={project.coverImageId}
                   alt={project.title}
                   className="h-64 w-full object-cover transition duration-700 group-hover:scale-110"
                 />

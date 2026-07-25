@@ -13,7 +13,7 @@ router.get("/projects", async (req, res) => {
         id: p._id,
         title: p.title,
         description: p.description,
-        coverImageUrl: p.coverImageUrl,
+        coverImageId: p.coverImageId,
         client: p.client,
         location: p.location,
         year: p.year,
@@ -27,7 +27,7 @@ router.get("/projects", async (req, res) => {
           name: cat.name,
           images: (cat.images || []).map((img) => ({
             id: img._id,
-            imageUrl: img.imageUrl,
+            imageId: img.imageId,
             caption: img.caption,
           })),
         })),
@@ -46,7 +46,7 @@ router.get("/products", async (req, res) => {
         id: p._id,
         name: p.name,
         description: p.description,
-        imageUrl: p.imageUrl,
+        imageId: p.imageId,
         categoryId: p.categoryId,
         categoryName: p.categoryName,
         price: p.price,
@@ -77,7 +77,7 @@ router.get("/projects/:projectId/project-categories", async (req, res) => {
         name: cat.name,
         images: (cat.images || []).map((img) => ({
           id: img._id,
-          imageUrl: img.imageUrl,
+          imageId: img.imageId,
           caption: img.caption,
         })),
       }))
@@ -137,17 +137,17 @@ router.post("/project-categories", async (req, res) => {
 
 router.post("/project-images", async (req, res) => {
   try {
-    const { categoryId, imageUrl, caption } = req.body;
+    const { categoryId, imageId, caption } = req.body;
     const project = await Project.findOne({ "categories._id": categoryId });
     if (!project) return res.status(404).json({ error: "Category not found" });
     const category = project.categories.id(categoryId);
-    const image = { imageUrl, caption };
+    const image = { imageId, caption };
     category.images.push(image);
     await project.save();
     const savedImage = category.images[category.images.length - 1];
     res.status(201).json({
       id: savedImage._id,
-      imageUrl: savedImage.imageUrl,
+      imageId: savedImage.imageId,
       caption: savedImage.caption,
       categoryId,
     });

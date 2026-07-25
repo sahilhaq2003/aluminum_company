@@ -1,15 +1,10 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const Image = require("../models/Image");
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, "..", "uploads")),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || ".jpg";
-    cb(null, `${Date.now()}-${Math.random().toString(36).slice(2, 9)}${ext}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
@@ -22,9 +17,19 @@ const upload = multer({
   },
 });
 
-router.post("/", upload.single("file"), (req, res) => {
+router.post("/", upload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-  res.status(201).json({ url: `/uploads/${req.file.filename}` });
+  try {
+    const image = await Image.create({
+      data: req.file.buffer,
+      filename: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+    });
+    res.status(201).json({ imageId: image._id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

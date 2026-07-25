@@ -6,6 +6,7 @@ const Project = require("./models/Project");
 const Product = require("./models/Product");
 const ProductCategory = require("./models/ProductCategory");
 const User = require("./models/User");
+const Image = require("./models/Image");
 
 const MONGO_URI = process.env.MONGODB_URI;
 const MONGO_DB = process.env.MONGODB_DB || "alumtech";
@@ -67,6 +68,15 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+async function createExternalImage(url) {
+  const image = await Image.create({
+    filename: url.split("/").pop().split("?")[0] || "image.jpg",
+    mimetype: "image/jpeg",
+    externalUrl: url,
+  });
+  return image._id;
+}
+
 async function seed() {
   await mongoose.connect(MONGO_URI, { dbName: MONGO_DB });
   console.log("Connected to MongoDB Atlas");
@@ -97,6 +107,20 @@ async function seed() {
     cats[name] = doc;
     console.log(`  Created category: ${name}`);
   }
+
+  console.log("  Creating image documents for seed data...");
+  const allImageUrls = [
+    ...IMAGES.windows, ...IMAGES.doors, ...IMAGES.facades, ...IMAGES.curtainWalls,
+    ...IMAGES.projectExterior, ...IMAGES.projectInterior, ...IMAGES.projectConstruction,
+    ...IMAGES.heroCover,
+  ];
+  const uniqueUrls = [...new Set(allImageUrls)];
+  const urlToId = {};
+  for (const url of uniqueUrls) {
+    const id = await createExternalImage(url);
+    urlToId[url] = id;
+  }
+  console.log(`  Created ${uniqueUrls.length} image documents`);
 
   const products = [
     { name: "Premium Sliding Window", price: "Rs 135,000 - Rs 240,000", stock: 45, cat: "Windows",
@@ -135,7 +159,7 @@ async function seed() {
   for (const p of products) {
     await Product.create({
       name: p.name, price: p.price, stock: p.stock,
-      description: p.desc, imageUrl: p.img,
+      description: p.desc, imageId: urlToId[p.img],
       categoryId: cats[p.cat]._id, categoryName: p.cat,
     });
   }
@@ -154,12 +178,12 @@ async function seed() {
       cover: IMAGES.heroCover[0],
       categories: [
         { name: "Exterior Views", images: [
-          { imageUrl: IMAGES.projectExterior[0], caption: "Tower exterior - south elevation" },
-          { imageUrl: IMAGES.projectExterior[1], caption: "Curtain wall detail at sunset" },
+          { url: IMAGES.projectExterior[0], caption: "Tower exterior - south elevation" },
+          { url: IMAGES.projectExterior[1], caption: "Curtain wall detail at sunset" },
         ]},
         { name: "Construction Process", images: [
-          { imageUrl: IMAGES.projectConstruction[0], caption: "Panel installation at level 40" },
-          { imageUrl: IMAGES.projectConstruction[1], caption: "Unitized panel rigging operation" },
+          { url: IMAGES.projectConstruction[0], caption: "Panel installation at level 40" },
+          { url: IMAGES.projectConstruction[1], caption: "Unitized panel rigging operation" },
         ]},
       ],
     },
@@ -175,8 +199,8 @@ async function seed() {
       cover: IMAGES.heroCover[1],
       categories: [
         { name: "Completed Views", images: [
-          { imageUrl: IMAGES.projectExterior[1], caption: "Waterfront elevation panorama" },
-          { imageUrl: IMAGES.projectInterior[0], caption: "Interior living space with view" },
+          { url: IMAGES.projectExterior[1], caption: "Waterfront elevation panorama" },
+          { url: IMAGES.projectInterior[0], caption: "Interior living space with view" },
         ]},
       ],
     },
@@ -192,12 +216,12 @@ async function seed() {
       cover: IMAGES.heroCover[2],
       categories: [
         { name: "Building Exteriors", images: [
-          { imageUrl: IMAGES.projectExterior[2], caption: "Main building entrance facade" },
-          { imageUrl: IMAGES.projectExterior[3], caption: "Thermal break facade detail" },
+          { url: IMAGES.projectExterior[2], caption: "Main building entrance facade" },
+          { url: IMAGES.projectExterior[3], caption: "Thermal break facade detail" },
         ]},
         { name: "Atrium & Skylights", images: [
-          { imageUrl: IMAGES.projectInterior[2], caption: "ETFE skylight atrium interior" },
-          { imageUrl: IMAGES.projectExterior[0], caption: "Natural light optimization" },
+          { url: IMAGES.projectInterior[2], caption: "ETFE skylight atrium interior" },
+          { url: IMAGES.projectExterior[0], caption: "Natural light optimization" },
         ]},
       ],
     },
@@ -213,8 +237,8 @@ async function seed() {
       cover: IMAGES.heroCover[4],
       categories: [
         { name: "Before & After", images: [
-          { imageUrl: IMAGES.projectExterior[3], caption: "Completed facade renovation" },
-          { imageUrl: IMAGES.projectConstruction[3], caption: "Night illumination effect" },
+          { url: IMAGES.projectExterior[3], caption: "Completed facade renovation" },
+          { url: IMAGES.projectConstruction[3], caption: "Night illumination effect" },
         ]},
       ],
     },
@@ -230,12 +254,12 @@ async function seed() {
       cover: IMAGES.heroCover[3],
       categories: [
         { name: "Resort Exterior", images: [
-          { imageUrl: IMAGES.projectExterior[1], caption: "Beachfront facade at golden hour" },
-          { imageUrl: IMAGES.projectInterior[0], caption: "Pool area glass enclosures" },
+          { url: IMAGES.projectExterior[1], caption: "Beachfront facade at golden hour" },
+          { url: IMAGES.projectInterior[0], caption: "Pool area glass enclosures" },
         ]},
         { name: "Interior Details", images: [
-          { imageUrl: IMAGES.projectInterior[1], caption: "Smart glass room partition" },
-          { imageUrl: IMAGES.projectInterior[3], caption: "Panoramic elevator enclosure" },
+          { url: IMAGES.projectInterior[1], caption: "Smart glass room partition" },
+          { url: IMAGES.projectInterior[3], caption: "Panoramic elevator enclosure" },
         ]},
       ],
     },
@@ -251,8 +275,8 @@ async function seed() {
       cover: IMAGES.heroCover[5],
       categories: [
         { name: "Façade Engineering", images: [
-          { imageUrl: IMAGES.projectExterior[0], caption: "Angular curtain wall system" },
-          { imageUrl: IMAGES.projectExterior[1], caption: "BIPV panel integration detail" },
+          { url: IMAGES.projectExterior[0], caption: "Angular curtain wall system" },
+          { url: IMAGES.projectExterior[1], caption: "BIPV panel integration detail" },
         ]},
       ],
     },
@@ -262,10 +286,10 @@ async function seed() {
     await Project.create({
       title: p.title, client: p.client, location: p.location, year: p.year,
       description: p.desc, challenge: p.challenge, solution: p.solution,
-      scope: p.scope, results: p.results, coverImageUrl: p.cover,
+      scope: p.scope, results: p.results, coverImageId: urlToId[p.cover],
       categories: p.categories.map((c) => ({
         name: c.name,
-        images: c.images.map((img) => ({ imageUrl: img.imageUrl, caption: img.caption })),
+        images: c.images.map((img) => ({ imageId: urlToId[img.url], caption: img.caption })),
       })),
     });
   }

@@ -14,7 +14,7 @@ export function ProductFormModal({ open, initial, categories, onClose, onSubmit 
       setForm({
         name: "",
         description: "",
-        imageUrl: "",
+        imageId: "",
         categoryId: safeCategories[0]?.id || "",
         price: "",
         stock: 0,
@@ -29,8 +29,8 @@ export function ProductFormModal({ open, initial, categories, onClose, onSubmit 
     if (!file) return;
     setIsUploading(true);
     try {
-      const url = await adminApi.uploadImage(file);
-      setForm({ ...form, imageUrl: url });
+      const imageId = await adminApi.uploadImage(file);
+      setForm({ ...form, imageId });
     } catch (err) {
       console.error("Upload failed", err);
     } finally {
@@ -100,9 +100,9 @@ export function ProductFormModal({ open, initial, categories, onClose, onSubmit 
               onChange={handleFileChange}
               disabled={isUploading}
             />
-            {form.imageUrl && (
+            {form.imageId && (
               <img
-                src={form.imageUrl}
+                src={`/api/images/${form.imageId}`}
                 className="h-10 w-10 rounded object-cover"
               />
             )}

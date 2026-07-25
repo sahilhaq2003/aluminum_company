@@ -2,11 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path");
 
 const publicRoutes = require("./routes/public");
 const adminRoutes = require("./routes/admin");
 const uploadRoutes = require("./routes/upload");
+const imageRoutes = require("./routes/images");
 const { authenticateToken } = require("./middleware/auth");
 
 const app = express();
@@ -18,11 +18,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", authenticateToken, adminRoutes);
 app.use("/api/admin/uploads", authenticateToken, uploadRoutes);
+app.use("/api/images", imageRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);

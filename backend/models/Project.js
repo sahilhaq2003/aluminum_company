@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const projectImageSchema = new mongoose.Schema({
-  imageUrl: { type: String, required: true },
+  imageId: { type: mongoose.Schema.Types.ObjectId, ref: "Image", required: true },
   caption: { type: String, default: "" },
 }, { _id: true });
 
@@ -20,7 +20,7 @@ const projectSchema = new mongoose.Schema({
   solution: { type: String, default: "" },
   scope: { type: String, default: "" },
   results: { type: String, default: "" },
-  coverImageUrl: { type: String, required: true },
+  coverImageId: { type: mongoose.Schema.Types.ObjectId, ref: "Image", required: true },
   productCategories: [{ type: String }],
   categories: [projectCategorySchema],
 }, { timestamps: true });

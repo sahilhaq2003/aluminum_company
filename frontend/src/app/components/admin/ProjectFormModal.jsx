@@ -17,7 +17,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
           name: cat.name || "",
           images: (cat.images || []).map((img) => ({
             _key: img._key || img.id || crypto.randomUUID(),
-            imageUrl: img.imageUrl || "",
+            imageId: img.imageId || "",
             caption: img.caption || "",
           })),
         }))
@@ -33,7 +33,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
         solution: "",
         scope: "",
         results: "",
-        coverImageUrl: "",
+        coverImageId: "",
         productCategories: [],
       });
       setGalleryCategories([]);
@@ -47,8 +47,8 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
     if (!file) return;
     setIsUploading(true);
     try {
-      const url = await adminApi.uploadImage(file);
-      setForm({ ...form, coverImageUrl: url });
+      const imageId = await adminApi.uploadImage(file);
+      setForm({ ...form, coverImageId: imageId });
     } catch (err) {
       console.error("Upload failed", err);
     } finally {
@@ -78,7 +78,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
     if (!file) return;
     setIsUploading(true);
     try {
-      const url = await adminApi.uploadImage(file);
+      const imageId = await adminApi.uploadImage(file);
       setGalleryCategories((prev) =>
         prev.map((cat, i) =>
           i === catIdx
@@ -86,7 +86,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
                 ...cat,
                 images: [
                   ...cat.images,
-                  { _key: crypto.randomUUID(), imageUrl: url, caption: "" },
+                  { _key: crypto.randomUUID(), imageId: imageId, caption: "" },
                 ],
               }
             : cat
@@ -130,9 +130,9 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
       .map((cat) => ({
         name: cat.name.trim(),
         images: cat.images
-          .filter((img) => img.imageUrl)
+          .filter((img) => img.imageId)
           .map((img) => ({
-            imageUrl: img.imageUrl,
+            imageId: img.imageId,
             caption: img.caption || "",
           })),
       }));
@@ -235,9 +235,9 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
                 onChange={handleCoverUpload}
                 disabled={isUploading}
               />
-              {form.coverImageUrl && (
+              {form.coverImageId && (
                 <img
-                  src={form.coverImageUrl}
+                  src={`/api/images/${form.coverImageId}`}
                   className="h-12 w-12 rounded-lg object-cover"
                   alt="Cover"
                 />
@@ -343,7 +343,7 @@ export function ProjectFormModal({ open, initial, productCategories, onClose, on
                         >
                           <div className="aspect-square overflow-hidden">
                             <img
-                              src={img.imageUrl}
+                              src={`/api/images/${img.imageId}`}
                               alt={img.caption || `Image ${imgIdx + 1}`}
                               className="h-full w-full object-cover"
                             />
