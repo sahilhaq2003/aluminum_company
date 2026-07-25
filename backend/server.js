@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 
 const publicRoutes = require("./routes/public");
 const adminRoutes = require("./routes/admin");
@@ -11,13 +10,24 @@ const { authenticateToken } = require("./middleware/auth");
 
 const app = express();
 
-const corsOrigins = process.env.CORS_ORIGINS;
-app.use(cors({
-  origin: corsOrigins
-    ? corsOrigins.split(",").map((s) => s.trim())
-    : true,
-  credentials: true,
-}));
+const allowedOrigins = (process.env.CORS_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.length === 0 || (origin && allowedOrigins.includes(origin))) {
+    res.setHeader("Access-Control-Allow-Origin", origin || allowedOrigins[0] || "*");
+  } else if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
