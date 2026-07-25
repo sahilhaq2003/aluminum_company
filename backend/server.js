@@ -11,8 +11,11 @@ const { authenticateToken } = require("./middleware/auth");
 
 const app = express();
 
+const corsOrigins = process.env.CORS_ORIGINS;
 app.use(cors({
-  origin: (process.env.CORS_ORIGINS || "http://localhost:5173").split(",").map((s) => s.trim()),
+  origin: corsOrigins
+    ? corsOrigins.split(",").map((s) => s.trim())
+    : true,
   credentials: true,
 }));
 app.use(express.json({ limit: "10mb" }));
