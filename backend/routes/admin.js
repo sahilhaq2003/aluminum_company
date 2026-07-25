@@ -4,25 +4,16 @@ const Project = require("../models/Project");
 const Product = require("../models/Product");
 const ProductCategory = require("../models/ProductCategory");
 const ContactMessage = require("../models/ContactMessage");
-const { resolveImageUrls } = require("../helpers/imageResolver");
 
 router.get("/projects", async (req, res) => {
   try {
     const projects = await Project.find().sort({ createdAt: -1 }).lean();
-    const allIds = projects.flatMap((p) => [
-      p.coverImageId,
-      ...(p.categories || []).flatMap((cat) => (cat.images || []).map((img) => img.imageId)),
-    ]);
-    const urlMap = await resolveImageUrls(allIds);
-    const resolve = (id) => urlMap[id?.toString()] || null;
-
     res.json(
       projects.map((p) => ({
         id: p._id,
         title: p.title,
         description: p.description,
         coverImageId: p.coverImageId,
-        coverImageUrl: resolve(p.coverImageId),
         client: p.client,
         location: p.location,
         year: p.year,
@@ -37,7 +28,6 @@ router.get("/projects", async (req, res) => {
           images: (cat.images || []).map((img) => ({
             id: img._id,
             imageId: img.imageId,
-            imageUrl: resolve(img.imageId),
             caption: img.caption,
           })),
         })),
@@ -51,17 +41,12 @@ router.get("/projects", async (req, res) => {
 router.get("/products", async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 }).lean();
-    const allIds = products.map((p) => p.imageId);
-    const urlMap = await resolveImageUrls(allIds);
-    const resolve = (id) => urlMap[id?.toString()] || null;
-
     res.json(
       products.map((p) => ({
         id: p._id,
         name: p.name,
         description: p.description,
         imageId: p.imageId,
-        imageUrl: resolve(p.imageId),
         categoryId: p.categoryId,
         categoryName: p.categoryName,
         price: p.price,
@@ -86,10 +71,6 @@ router.get("/projects/:projectId/project-categories", async (req, res) => {
   try {
     const project = await Project.findById(req.params.projectId).lean();
     if (!project) return res.status(404).json({ error: "Project not found" });
-    const allIds = (project.categories || []).flatMap((cat) => (cat.images || []).map((img) => img.imageId));
-    const urlMap = await resolveImageUrls(allIds);
-    const resolve = (id) => urlMap[id?.toString()] || null;
-
     res.json(
       (project.categories || []).map((cat) => ({
         id: cat._id,
@@ -97,7 +78,6 @@ router.get("/projects/:projectId/project-categories", async (req, res) => {
         images: (cat.images || []).map((img) => ({
           id: img._id,
           imageId: img.imageId,
-          imageUrl: resolve(img.imageId),
           caption: img.caption,
         })),
       }))

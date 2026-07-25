@@ -117,7 +117,7 @@ export default function ProjectsPage() {
               >
                 <div className="relative h-56 overflow-hidden">
                   <ImageWithFallback
-                    src={project.coverImageUrl}
+                    imageId={project.coverImageId}
                     alt={project.title}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                   />
@@ -165,7 +165,7 @@ export default function ProjectsPage() {
                 >
                   <div className="relative h-40 overflow-hidden">
                     <ImageWithFallback
-                      src={p.imageUrl}
+                      imageId={p.imageId}
                       alt={p.name}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />

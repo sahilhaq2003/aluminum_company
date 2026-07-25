@@ -124,7 +124,7 @@ export default function ProductsPage() {
                 >
                   <div className="relative h-52 overflow-hidden">
                     <ImageWithFallback
-                      src={p.imageUrl}
+                      imageId={p.imageId}
                       alt={p.name}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
